@@ -1,68 +1,60 @@
-import React, { useState } from 'react';
-import './SavedMovies.css';
+import React from 'react';
 import PropTypes from 'prop-types';
-import Header from '../Header/Header';
-import SearchForm from '../SearchForm/SearchForm';
-import MoviesCardList from '../MoviesCardList/MoviesCardList';
-import Footer from '../Footer/Footer';
-import MoviesCard from '../MoviesCard/MoviesCard';
-import { SHORT_MOVIE_DURATION } from '../../utils/constants';
+import './SavedMovies.css';
+import Header from "../Header/Header";
+import SearchForm from "../SearchForm/SearchForm";
+import Footer from "../Footer/Footer";
+import MoviesCardList from "../MoviesCardList/MoviesCardList";
+import { filterByKeyword, filterBeatFilms } from '../../utils/filterFilms';
 
-function SavedMovies({
-  isLoading, loggedIn, findMovies, movies, messages, onCardDelete
-}) {
-  const [filterIsOn, setFilterIsOn] = useState(false);
+const SavedMovies = (props) => {
+  const {
+    isBeatFilm,
+    searchKeyword,
+    cards,
+    onSearchSubmit,
+    onIsBeatFilmChanged
+  } = props;
 
-  const filterShortFilm = !filterIsOn ? movies : movies.filter(
-    (movie) => movie.duration <= SHORT_MOVIE_DURATION,
-  );
-
-  const onFilterClick = () => {
-    setFilterIsOn(!filterIsOn);
-  };
-
+  let filteredCards = cards;
+  if (isBeatFilm) {
+    filteredCards = filterBeatFilms(filteredCards)
+  }
+  if (searchKeyword !== '') {
+    filteredCards = filterByKeyword(filteredCards, searchKeyword)
+  }
   return (
-    <div className="saved-movies">
-      <Header loggedIn={loggedIn} />
-      <SearchForm
-        findMovies={findMovies}
-        isLoading={isLoading}
-        onFilterClick={onFilterClick}
+    <div className="page">
+      <Header
+        loggedIn={props.loggedIn}
+        onOpenMenu={props.onOpenMenu}
       />
-      <MoviesCardList
-        isLoading={isLoading}
-        moviesCards={filterShortFilm}
-        messages={messages}
-      >
-        {
-          (filterShortFilm.map((card) => (
-            <MoviesCard
-              key={card.movieId}
-              // eslint-disable-next-line react/jsx-props-no-spreading
-              {...card}
-              onCardDelete={onCardDelete}
-            />
-          )).reverse())
-        }
-      </MoviesCardList>
+      <main>
+        <SearchForm
+          initialKeyword={searchKeyword}
+          isBeatFilm={isBeatFilm}
+          onSubmit={onSearchSubmit}
+          onIsBeatFilmChanged={onIsBeatFilmChanged}
+        />
+        <MoviesCardList
+          cards={filteredCards}
+          isSavedMovies={true}
+          savedFilms={filteredCards}
+          displayCards={true}
+          onDeleteFilm={props.onDeleteFilm}
+        />
+      </main>
       <Footer />
     </div>
   );
 }
 
 SavedMovies.propTypes = {
-  isLoading: PropTypes.bool.isRequired,
-  loggedIn: PropTypes.bool.isRequired,
-  findMovies: PropTypes.func.isRequired,
-  movies: PropTypes.arrayOf(PropTypes.object).isRequired,
-  messages: PropTypes.shape({
-    regForm: PropTypes.string,
-    authForm: PropTypes.string,
-    profileForm: PropTypes.string,
-    searchForm: PropTypes.string,
-    auth: PropTypes.string,
-  }).isRequired,
-  onCardDelete: PropTypes.func.isRequired,
+  cards: PropTypes.arrayOf(PropTypes.object).isRequired,
+  isBeatFilm: PropTypes.bool.isRequired,
+  searchKeyword: PropTypes.string.isRequired,
+  onSearchSubmit: PropTypes.func.isRequired,
+  onIsBeatFilmChanged: PropTypes.func.isRequired
 };
 
 export default SavedMovies;

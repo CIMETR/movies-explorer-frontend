@@ -1,99 +1,112 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import './Profile.css';
-import PropTypes from 'prop-types';
 import Header from '../Header/Header';
-import CurrentUserContext from '../../contexts/CurrentUserContext';
-import { useFormWithValidation } from '../../hooks/useForm';
+import ErrorMessage from '../ErrorMessage/ErrorMessage';
+import { useFormWithValidation } from '../../utils/useFormWithValidation';
+import { CurrentUserContext } from '../../utils/CurrentUserContext';
 
-function Profile({
-  handleLogout,
-  loggedIn,
-  onUpdateUser,
-  isSending,
-  messages,
-}) {
+const Profile = (props) => {
+  const { values, handleChange, errors, isValid, resetForm } = useFormWithValidation();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+
   const currentUser = useContext(CurrentUserContext);
 
-  const {
-    values, handleChange, resetForm, errors, isValid,
-  } = useFormWithValidation();
-
-  useEffect(() => {
-    if (currentUser) {
-      resetForm(currentUser, {}, true);
-    }
-  }, [currentUser, resetForm]);
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    onUpdateUser({ email: values.email, name: values.name });
+  const handleInputName = (event) => {
+    setName(event.target.value.replace(/[^a-zа-я \\-]{2,30}/gi, ((letter) => '')));
   }
 
+  const handleInputEmail = (event) => {
+    setEmail(event.target.value);
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    props.onEditProfile({
+      name: values['profile-name'] || name,
+      email: values['profile-email'] || email,
+    });
+    resetForm();
+  };
+
+  useEffect(() => {
+    setName(currentUser ? currentUser.name : '');
+    setEmail(currentUser ? currentUser.email : '');
+  }, [currentUser]);
+
   return (
-    <div className="profile">
-      <Header loggedIn={loggedIn} />
-      <h2 className="profile__form-title">{`Привет, ${currentUser.name}!`}</h2>
-      <form
-        className="profile__form"
-        onSubmit={handleSubmit}
-      >
-        <div className="profile__input-container">
-          <span className="profile__input-title">Имя</span>
-          <input
-            className="profile__input"
-            onChange={handleChange}
-            id="name"
-            name="name"
-            type="text"
-            pattern="^[А-Яа-яЁёA-Za-z]+-? ?[А-Яа-яЁёA-Za-z]+$"
-            value={values.name || currentUser.name}
-            minLength="2"
-            maxLength="20"
-            required
-          />
-        </div>
-        <span className="login__input-error" id="email-error">{errors.name}</span>
-        <div className="profile__input-container">
-          <span className="profile__input-title">E-mail</span>
-          <input
-            className="profile__input"
-            onChange={handleChange}
-            id="email"
-            name="email"
-            type="email"
-            value={values.email || currentUser.email}
-            required
-          />
-        </div>
-        <span className="login__input-error" id="email-error">{errors.email}</span>
-        {messages && <span className="login__input-error" id="messages">{messages.profileForm}</span>}
-        <button
-          type="submit"
-          className={`profile__button
-          ${!isValid && 'login__button_disabled'}
-          ${values.email === currentUser.email && values.name === currentUser.name && 'login__button_disabled'}
-          ${isSending && 'login__button_disabled'}`}
-        >
-          Редактировать
-        </button>
-        <button type="button" className="profile__button profile__button_type_exit" onClick={handleLogout}>Выйти из аккаунта</button>
-      </form>
+    <div className="page">
+      <Header
+        loggedIn={props.loggedIn}
+        onOpenMenu={props.onOpenMenu}
+      />
+      <main>
+        <section className="profile">
+          <h1 className="profile__greetings">Привет, {name}!</h1>
+
+          <form className="profile__container" onSubmit={handleSubmit}>
+            <label htmlFor="profile-name" className="profile__label">
+              Имя
+              <input
+                type="text"
+                id="profile-name"
+                name="profile-name"
+                value={name}
+                placeholder="Имя"
+                className="profile__name-input"
+                required minLength="2"
+                maxLength="30"
+                onInput={handleInputName}
+                onChange={handleChange}
+              />
+            </label>
+
+            <hr className="profile__line" />
+
+            <label htmlFor="profile-email" className="profile__label">
+              E-mail
+              <input
+                type="email"
+                id="profile-email"
+                name="profile-email"
+                value={email}
+                placeholder="E-mail"
+                className="profile__email-input"
+                required
+                onInput={handleInputEmail}
+                onChange={handleChange}
+              />
+            </label>
+
+            {!Object.keys(errors).length
+              ? ''
+              : Object.entries(errors)
+                .map(([errKey, errValue]) => (
+                  <ErrorMessage key={errKey} text={errValue} isErrorVisible={true} />
+                ))}
+
+            <ErrorMessage text={props.errorText} isErrorVisible={props.isErrorVisible} />
+            <div className="profile__success-message" style={{
+              display: props.showSuccessMessage ? 'block' : 'none'
+            }}>Профиль успешно отредактирован</div>
+
+            <input
+              type="submit"
+              value="Редактировать"
+              className={`profile__edit-button${!isValid &&
+                (currentUser.name === name ||
+                currentUser.email === email)
+                ? ' profile__edit-button_disabled'
+                : ''}`}
+            />
+          </form>
+
+          <button className="profile__link" onClick={props.onSignOut}>Выйти из аккаунта</button>
+        </section>
+      </main>
     </div>
   );
 }
 
-Profile.propTypes = {
-  handleLogout: PropTypes.func.isRequired,
-  loggedIn: PropTypes.bool.isRequired,
-  onUpdateUser: PropTypes.func.isRequired,
-  isSending: PropTypes.bool.isRequired,
-  messages: PropTypes.shape({
-    regForm: PropTypes.string,
-    authForm: PropTypes.string,
-    profileForm: PropTypes.string,
-    searchForm: PropTypes.string,
-    auth: PropTypes.string,
-  }).isRequired,
-};
-
 export default Profile;
+

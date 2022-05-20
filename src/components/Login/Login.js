@@ -1,100 +1,92 @@
-import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
-import './Login.css';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import logo from '../../images/header-logo.svg';
-import { useFormWithValidation } from '../../hooks/useForm';
+import './Login.css';
+import logoPath from '../../images/header-logo.svg';
+import ErrorMessage from '../ErrorMessage/ErrorMessage';
+import { useFormWithValidation } from '../../utils/useFormWithValidation';
 
-function Login({ handleLogin, isSending, messages }) {
-  const {
-    values,
-    handleChange,
-    resetForm,
-    errors,
-    isValid,
-  } = useFormWithValidation();
+const Login = (props) => {
+  const { values, handleChange, errors, isValid, resetForm } = useFormWithValidation();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  useEffect(() => {
-    resetForm({});
-  }, []);
+  const handleInputEmail = (event) => {
+    setEmail(event.target.value);
+  }
+
+  const handleInputPassword = (event) => {
+    setPassword(event.target.value);
+  }
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!values.email || !values.password) {
-      return;
-    }
-    const { password, email } = values;
-    handleLogin({ password, email });
+    props.onLogin({
+      email: values['login-email'],
+      password: values['login-pass'],
+    });
+    resetForm();
+    setEmail('');
+    setPassword('');
   };
 
   return (
-    <div className="login">
-      <Link to="." className="login__link">
-        <img src={logo} alt="Логотип" className="login__logo" />
+    <form className="login" onSubmit={handleSubmit}>
+      <Link to="/" className="logo-inAuth">
+        <img alt='Логотип' src={logoPath} />
       </Link>
-      <h2 className="login__title">Рады видеть!</h2>
-      <form
-        className="login__form"
-        onSubmit={handleSubmit}
-      >
-        <span className="login__input-title">E-mail</span>
-        <input
-          className="login__input"
-          onChange={handleChange}
-          id="email"
-          name="email"
-          type="email"
-          value={values.email || ''}
-          required
-          disabled={isSending}
-        />
-        <span className="login__input-error" id="email-error">{errors.email}</span>
 
-        <span className="login__input-title">Пароль</span>
-        <input
-          className="login__input"
-          id="password"
-          name="password"
-          type="password"
-          onChange={handleChange}
-          value={values.password || ''}
-          autoComplete="on"
-          required
-          disabled={isSending}
-        />
-        <span className="login__input-error" id="password-error">{errors.password}</span>
+      <h1 className="login__greeting">Рады видеть!</h1>
 
-        <span className="login__input-error" id="messages">{messages.authForm}</span>
+      <label htmlFor="login-email" className="login__label">E-mail</label>
+      <input
+        type="email"
+        id="login-email"
+        name="login-email"
+        placeholder="E-mail"
+        value={email}
+        className="login__input login__email-input"
+        required
+        onInput={handleInputEmail}
+        onChange={handleChange}
+      />
 
-        <button
-          type="submit"
-          className={`login__button
-          ${!isValid && 'login__button_disabled'}
-          ${isSending && 'login__button_disabled'}`}
-        >
-          {isSending ? 'Вход...' : 'Войти'}
-        </button>
-        <div className="login__signup">
-          <p className="login__link-title">Ещё не зарегистрированы?</p>
-          <Link to="signup" className="login__register-link">
-            Регистрация
-          </Link>
-        </div>
-      </form>
-    </div>
+      <label htmlFor="login-pass" className="login__label">Пароль</label>
+      <input
+        type="password"
+        id="login-pass"
+        name="login-pass"
+        placeholder="Пароль"
+        value={password}
+        className="login__input login__pass-input"
+        required
+        onInput={handleInputPassword}
+        onChange={handleChange}
+      />
+
+      {!Object.keys(errors).length
+        ? ''
+        : Object.entries(errors)
+          .map(([errKey, errValue]) => (
+            <ErrorMessage key={errKey} text={errValue} isErrorVisible={true} />
+          ))}
+
+      <ErrorMessage text={props.errorText} isErrorVisible={props.isErrorVisible} />
+
+      <input
+        type="submit"
+        value="Войти"
+        className={`login__sign-button${!isValid
+          ? ' login__sign-button_disabled'
+          : ''}`}
+        disabled={!isValid}
+      />
+
+      <div className="login__reg-block">
+        <span className="login__reg-text">Ещё не зарегистрированы?</span>
+        <Link to="/signup" className="login__reg-link">Регистрация</Link>
+      </div>
+    </form>
   );
 }
-
-Login.propTypes = {
-  handleLogin: PropTypes.func.isRequired,
-  isSending: PropTypes.bool.isRequired,
-  messages: PropTypes.shape({
-    regForm: PropTypes.string,
-    authForm: PropTypes.string,
-    profileForm: PropTypes.string,
-    searchForm: PropTypes.string,
-    auth: PropTypes.string,
-  }).isRequired,
-};
 
 export default Login;

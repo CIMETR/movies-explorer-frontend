@@ -1,11 +1,11 @@
-.movies{
-    width: 100%;
-    max-width: 1280px;
-    margin: auto;
+.hide-block {
+  display: none;
 }
 
-@media screen and (max-width: 320px) {
-    .movies{
-        min-width: 320px;
-    }
+.show-more {
+  display: block;
+}
+
+.show-cards {
+  display: grid;
 }

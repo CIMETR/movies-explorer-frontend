@@ -1,131 +1,100 @@
-.search-form {
-    padding: 0 10px 10px 10px;
+.search {
+  padding: 70px 70px 10px;
 }
 
-.search-form__container {
-    padding: 80px 0  0;
-    border-bottom: 1px solid #E8E8E8;
+.search__container {
+  background: #FDFDFD;
+  box-shadow: 0px 3px 14px rgba(0, 0, 0, 0.08);
+  border-radius: 9px;
+  width: 100%;
+  box-sizing: border-box;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  padding: 0 30px 0 19px;
 }
 
-.search-form__form {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-sizing: border-box;
+.search__icon {
+  width: 34px;
+  height: 34px;
+  background-image: url('../../images/icon-search.svg');
+  background-repeat: no-repeat;
 }
 
-.search-form__film-container {
-    width: 100%;
-    min-height: 72px;
-    display: flex;
-    align-items: center;
-    background-color: #F9F9F9;
-    border-radius: 9px;
-    margin: 0 0 45px 0;
+.search__input {
+  border: none;
+  outline: none;
+  width: 50%;
+  padding: 10px;
+  font-weight: normal;
+  font-size: 18px;
+  line-height: 20px;
+  color: #A0A0A0;
 }
 
-.search-form__film-icon {
-    min-width: 34px;
-    min-height: 34px;
-    object-fit: none;
-    object-position: center center;
+.search__input::placeholder {
+  font-family: Inter;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 18px;
+  line-height: 20px;
+  color: #A0A0A0;
 }
 
+.search__submit {
+  background-repeat: no-repeat;
+  background-color: #3456f3;
+  background-position: center;
+  min-height: 34px;
+  min-width: 80px;
+  border-radius: 48px;
+  border: none;
+  margin: 0 19px 0 auto;
+  color: #fff;
+  font-weight: 500;
+  font-size: 11px;
+  line-height: 18px;
+  font-family: Inter;
+}
 
-.search-form__film-input {
-    background-color: transparent;
-    border: none;
-    outline: none;
-    color: #000;
-    box-sizing: border-box;
-    margin: 0 20px 0 19px;
-    padding: 0;
-    width: 100%;
+.search__submit:hover {
+  cursor: pointer;
+  opacity: 0.8;
+}
+
+.search__line {
+  margin: 69px 0 0;
+  border-color: #E8E8E8;
+  border-top: 0;
+}
+
+@media (max-width: 1020px) {
+  .search {
+    padding: 80px 30px 10px;
+  }
+  .search__line {
+    margin-top: 109px;
+  }
+}
+
+@media (max-width: 760px) {
+  .search {
+    padding: 80px 10px 10px;
+  }
+  .search__container {
+    position: relative;
+    padding: 0 19px;
+  }
+  .search__icon {
+    display: none;
+  }
+  .search__input {
     font-size: 14px;
-    line-height: 20px;
-}
-
-.search-form__film-input:focus {
-    border-bottom: 1px solid #3456f3;
-}
-
-.search-form__film-input::placeholder {
+  }
+  .search__input::placeholder {
     font-size: 14px;
-    line-height: 20px;
-    color: #A0A0A0;
-}
-
-.search-form__film-find {
-    margin: 0 19px 0 auto;
-    padding: 0;
-    border: none;
-    box-shadow: none;
-    min-width: 80px;
-    min-height: 34px;
-    border-radius: 48px;
-    background-color: #3456F3;
-    color: #fff;
-    font-weight: 500;
-    font-size: 11px;
-    line-height: 18px;
-    transition: opacity .25s ease-in;
-}
-
-.search-form__film-find:hover {
-    opacity: .6;
-    cursor: pointer;
-    transition: opacity .25s ease-in;
-}
-
-@media screen and (min-width: 540px) {
-    .search-form {
-        padding: 0 30px 10px 30px;
-    }
-
-    .search-form__container {
-        padding: 70px 0 69px 0;
-    }
-
-    .search-form__form {
-        flex-direction: row;
-        margin: 0;
-        background-color: #F9F9F9;
-        border-radius: 9px;
-    }
-
-    .search-form__film-container {
-        min-height: 40px;
-        margin: 0;
-        background-color: transparent;
-        box-shadow: none;
-        border-radius: 0;
-        border-right: 1px solid #CBCBCB;
-    }
-
-    .search-form__film-icon {
-        display: block;
-    }
-
-    .search-form__film-input {
-        margin: 0 20px 0 10px;
-        font-size: 18px;
-    }
-
-    .search-form__film-input::placeholder {
-        font-size: 18px;
-    }
-}
-
-@media screen and (min-width: 1280px) {
-    .search-form {
-        padding: 0 70px 10px 70px;
-    }
-
-    .search-form__container {
-        padding: 70px 0 69px 0;
-    }
-
-    .search-form__form {
-        padding: 16px 0px 16px 0px;
-    }
+  }
+  .search__submit {
+    margin-right: 0;
+  }
 }

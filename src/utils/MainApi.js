@@ -1,91 +1,110 @@
-import reqOptions from './options';
-
 class Api {
   constructor(options) {
     this._url = options.baseUrl;
-    this._headers = options.headers;
   }
 
-  _parseResponse = (res) => {
-    if (res.ok) {
-      return res.json();
-    }
-    return Promise.reject(new Error(res.status));
+  register({ name, email, password }) {
+    return fetch(`${this._url}/signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name, email, password }),
+      credentials: 'include'
+    })
+      .then(this._getResponseData);
   }
 
-  // # возвращает информацию о пользователе (email и имя)
-  // GET /users/me
-  getUserInfo() {
+  authorize({ email, password }) {
+    return fetch(`${this._url}/signin`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+      credentials: 'include'
+    })
+      .then(this._getResponseData);
+  }
+
+  logOut = () => {
+    return fetch(`${this._url}/signout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include'
+    })
+      .then(this._getResponseData);
+  };
+
+  checkToken() {
     return fetch(`${this._url}/users/me`, {
-      headers: this._headers,
-      credentials: 'include',
+      credentials: 'include'
     })
-      .then((res) => this._parseResponse(res));
+      .then(this._getResponseData);
   }
 
-  getSavedMovies() {
-    return fetch(`${this._url}/movies`, {
-      headers: this._headers,
-      credentials: 'include',
-    })
-      .then((res) => this._parseResponse(res));
-  }
-
-  // # обновляет информацию о пользователе (email и имя)
-  // PATCH /users/me
-  setUserInfo(name, email) {
+  editProfile(data) {
     return fetch(`${this._url}/users/me`, {
       method: 'PATCH',
-      credentials: 'include',
-      headers: this._headers,
-      body: JSON.stringify(name, email),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: data.name,
+        email: data.email
+      }),
+      credentials: 'include'
     })
-      .then((res) => this._parseResponse(res));
+      .then(this._getResponseData);
   }
 
-  saveMovie({
-    id,
-    country,
-    director,
-    duration,
-    year,
-    description,
-    image,
-    trailerLink,
-    nameRU,
-    nameEN,
-  }) {
+  getSavedFilms() {
+    return fetch(`${this._url}/movies`, {
+      credentials: 'include'
+    })
+      .then(this._getResponseData);
+  }
+
+  saveFilm(filmInfo) {
     return fetch(`${this._url}/movies`, {
       method: 'POST',
-      headers: this._headers,
-      credentials: 'include',
-      body: JSON.stringify({
-        country,
-        director,
-        duration,
-        year,
-        description,
-        image: image.url,
-        trailer: trailerLink,
-        thumbnail: image.formats.thumbnail.url,
-        nameRU,
-        nameEN,
-        movieId: id,
-      }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(filmInfo),
+      credentials: 'include'
     })
-      .then((res) => this._parseResponse(res));
+      .then(this._getResponseData);
   }
 
-  deleteMovie(id) {
-    return fetch(`${this._url}/movies/${id}`, {
-      headers: this._headers,
+  deleteFilm(filmId) {
+    return fetch(`${this._url}/movies/${filmId}`, {
       method: 'DELETE',
-      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include'
     })
-      .then((res) => this._parseResponse(res));
+      .then(this._getResponseData);
+  }
+
+  _getResponseData(response) {
+    if (response.ok) {
+      return response.json().catch(() => Promise.reject(new Error('Unknown server response')));
+    }
+    return response.json()
+      .then(
+        (data) => Promise.reject(new Error(data.message || 'Ошибка' + response.statusText || 'Ошибка' + response.status || 'Unknown error')),
+        () => Promise.reject(new Error('Ошибка' + response.statusText || 'Ошибка' + response.status || 'Unknown server response'))
+      )
   }
 }
 
-const MainApi = new Api(reqOptions);
+const api = new Api({
+  baseUrl: '//antidiplom.nomoredomains.work',
+  // baseUrl: 'http://localhost:3001',
+});
 
-export default MainApi;
+export default api;

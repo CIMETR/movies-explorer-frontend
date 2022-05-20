@@ -1,26 +1,23 @@
-import reqOptions from './options';
-
-class Api {
+class MoviesApi {
   constructor(options) {
-    this._url = options.beatfilmUrl;
-    this._headers = options.headers;
+    this._url = options.baseUrl;
   }
 
-  _parseResponse = (res) => {
-    if (res.ok) {
-      return res.json();
+  getFilms() {
+    return fetch(`${this._url}`)
+      .then(this._getResponseData);
+  }
+
+  _getResponseData(response) {
+    if (response.ok) {
+      return response.json();
     }
-    return Promise.reject(new Error(`Ошибка: ${res.status}`));
-  }
-
-  getMovies() {
-    return fetch(this._url, {
-      headers: this._headers,
-    })
-      .then((res) => this._parseResponse(res));
+    return Promise.reject(new Error(`Ошибка ${response.status}`));
   }
 }
 
-const MoviesApi = new Api(reqOptions);
+const moviesApi = new MoviesApi({
+  baseUrl: 'https://api.nomoreparties.co/beatfilm-movies',
+});
 
-export default MoviesApi;
+export default moviesApi;

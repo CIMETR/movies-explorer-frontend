@@ -2,21 +2,29 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './FilterCheckbox.css';
 
-function FilterCheckbox({ onFilterClick }) {
-    return (
-    <div className="filter-checkbox">
-      <label className="filter-checkbox__switch">
-        <input type="checkbox" onClick={onFilterClick} className="filter-checkbox__input" />
-        <span className="filter-checkbox__slider" />
-      </label>
-      <h3 className="filter-checkbox__title">Короткометражки</h3>
+const FilterCheckbox = ({ onChange, value }) => {
+  const handleChange = () => {
+    onChange(!value);
+  };
+
+  return (
+    <div className="filter">
+      <input
+        type="checkbox"
+        id="switch"
+        className="filter__input"
+        checked={value}
+        onChange={handleChange}
+      />
+      <label htmlFor="switch" className="filter__label"></label>
+      <p className="filter__text">Короткометражки</p>
     </div>
   );
 }
 
 FilterCheckbox.propTypes = {
-  handleCheck: PropTypes.func.isRequired,
-  filtered: PropTypes.bool.isRequired,
-};
+  onChange: PropTypes.func.isRequired,
+  value: PropTypes.bool.isRequired
+}
 
 export default FilterCheckbox;

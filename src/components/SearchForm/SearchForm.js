@@ -1,66 +1,70 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import './SearchForm.css';
-import {useFormWithValidation} from '../../hooks/useForm';
-import iconSearchInput from '../../images/search-icon-form.svg'
 import FilterCheckbox from '../FilterCheckbox/FilterCheckbox';
+import ErrorMessage from '../ErrorMessage/ErrorMessage';
 
-function SearchForm({findMovies, isLoading, onFilterClick}) {
+const SearchForm = (props) => {
+  const {
+    initialKeyword,
+    isBeatFilm,
+    onIsBeatFilmChanged,
+    onSubmit,
+  } = props;
 
-    const {
-        values,
-        handleChange,
-        resetForm,
-    } = useFormWithValidation();
+  const [keyword, setKeyword] = useState(initialKeyword);
 
-    const [error, setError] = useState('');
+  const [hasError, setHasError] = useState(false);
 
-    function handleSubmit(e) {
-        e.preventDefault();
-        if (!values.movie) {
-            setError('Нужно ввести ключевое слово');
-        } else {
-            findMovies(values.movie);
-            setError('');
-            resetForm();
-        }
-    }
-    return (
-        <section className="search-form">
-            <div className="search-form__container">
-                <form className="search-form__form"
-                      title="Поиск фильма"
-                      name="search-film"
-                      onSubmit={handleSubmit}>
-                    <div className="search-form__film-container">
-                        <img src={iconSearchInput} alt="Значок с лупой"
-                             className="search-form__film-icon"/>
-                        <input className="search-form__film-input"
-                               onChange={handleChange}
-                               id="movie"
-                               name="movie"
-                               type="text"
-                               maxLength="100"
-                               placeholder="Фильм"
-                               disabled={isLoading}/>
-                        <span className="search-form__input-error" id="movie-error">{error}</span>
-                        <button className="search-form__film-find"
-                                type="submit">
-                            Найти
-                        </button>
-                    </div>
-                    <FilterCheckbox
-                      onFilterClick={onFilterClick}
-                    />
-                </form>
-            </div>
-        </section>
-    );
+  const handleInput = (e) => {
+    setKeyword(e.target.value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setHasError(!keyword);
+    if (!!keyword) onSubmit(keyword);
+  };
+
+  return (
+    <section className="search">
+      <form
+        className="search__container"
+        noValidate
+        onSubmit={handleSubmit}
+      >
+        <label htmlFor="site-search">
+          <div className="search__icon"></div>
+        </label>
+        <input
+          type="search"
+          id="site-search"
+          name="site-search"
+          value={keyword}
+          placeholder="Фильм"
+          className="search__input"
+          onChange={handleInput}
+          required
+        />
+        <button type="submit" className="search__submit">Найти</button>
+        <FilterCheckbox value={isBeatFilm} onChange={onIsBeatFilmChanged} />
+      </form>
+      <ErrorMessage text="Нужно ввести ключевое слово" isErrorVisible={hasError} />
+      <hr className="search__line" />
+    </section>
+  );
 }
 
 SearchForm.propTypes = {
-    findMovies: PropTypes.func.isRequired,
-    isLoading: PropTypes.bool.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  onIsBeatFilmChanged: PropTypes.func.isRequired,
+  initialKeyword: PropTypes.string,
+  initialIsBeatFilm: PropTypes.bool,
+};
+
+SearchForm.defaultProps = {
+  initialKeyword: '',
+  initialIsBeatFilm: true,
 };
 
 export default SearchForm;
