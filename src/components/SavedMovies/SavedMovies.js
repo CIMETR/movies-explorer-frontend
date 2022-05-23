@@ -13,7 +13,7 @@ const SavedMovies = (props) => {
     searchKeyword,
     cards,
     onSearchSubmit,
-    onIsBeatFilmChanged
+    // onIsBeatFilmChanged
   } = props;
 
   let filteredCards = cards;
@@ -31,10 +31,10 @@ const SavedMovies = (props) => {
       />
       <main>
         <SearchForm
-          initialKeyword={searchKeyword}
-          isBeatFilm={isBeatFilm}
+          // initialKeyword={searchKeyword}
+          // isBeatFilm={isBeatFilm}
           onSubmit={onSearchSubmit}
-          onIsBeatFilmChanged={onIsBeatFilmChanged}
+          // onIsBeatFilmChanged={onIsBeatFilmChanged}
         />
         <MoviesCardList
           cards={filteredCards}
@@ -42,6 +42,9 @@ const SavedMovies = (props) => {
           savedFilms={filteredCards}
           displayCards={true}
           onDeleteFilm={props.onDeleteFilm}
+          isErrorVisible={props.isErrorVisible}
+          wasRequest={props.wasRequest}
+          errorText={props.errorText}
         />
       </main>
       <Footer />

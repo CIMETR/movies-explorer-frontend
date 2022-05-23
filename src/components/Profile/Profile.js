@@ -93,6 +93,7 @@ const Profile = (props) => {
             <input
               type="submit"
               value="Редактировать"
+              disabled={!isValid}
               className={`profile__edit-button${!isValid &&
                 (currentUser.name === name ||
                 currentUser.email === email)

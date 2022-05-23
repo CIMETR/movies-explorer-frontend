@@ -378,6 +378,9 @@ const App = () => {
             onDeleteFilm={handleDeleteFilm}
             onSearchSubmit={handleSearchSubmit}
             onIsBeatFilmChanged={handleIsBeatFilmChanged}
+            isErrorVisible={isErrorVisible}
+            errorText={errorText}
+            wasRequest={wasRequest}
           />
           <ProtectedRoute
             path="/profile"
