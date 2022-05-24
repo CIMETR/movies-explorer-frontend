@@ -71,6 +71,10 @@
   opacity: .4;
 }
 
+.profile__edit-button:disabled {
+  opacity: .4;
+}
+
 .profile__link {
   border: none;
   padding: 0;

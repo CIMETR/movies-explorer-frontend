@@ -93,7 +93,8 @@ const Profile = (props) => {
             <input
               type="submit"
               value="Редактировать"
-              disabled={!isValid}
+              // eslint-disable-next-line no-mixed-operators
+              disabled={currentUser && (name === currentUser.name && email === currentUser.email) || !isValid}
               className={`profile__edit-button${!isValid &&
                 (currentUser.name === name ||
                 currentUser.email === email)
